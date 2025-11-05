@@ -25,21 +25,6 @@ export const seedPlans = async () => {
     },
   });
 
-  // Seed Trial Plan
-  await prisma.plan.upsert({
-    where: { name: "Trial" },
-    update: {},
-    create: {
-      name: "Trial",
-      description: "Includes all available features",
-      currency: "LKR",
-      max_employees: 50,
-      features: {
-        connect: featureIds,
-      },
-    },
-  });
-
   console.log("Plans seeded successfully");
 };
 

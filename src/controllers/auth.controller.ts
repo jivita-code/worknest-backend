@@ -16,18 +16,3 @@ export const loginOrganization = async (req: Request, res: Response, next: NextF
     next(err);
   }
 };
-
-export const getOrganizationProfile = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { org_id } = req.user as { org_id: string };
-
-    const organization = await authService.getOrganizationById(org_id);
-    if (!organization) {
-      return res.status(404).json({ error: "Organization not found" });
-    }
-
-    res.status(200).json(organization);
-  } catch (err) {
-    next(err);
-  }
-};

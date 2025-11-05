@@ -1,13 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 
 // Mock the auth service
-jest.mock("../../services/auth.service", () => ({
+jest.mock("../../../services/auth.service", () => ({
   loginOrganization: jest.fn(),
-  getOrganizationById: jest.fn(),
 }));
 import * as authService from "../../../services/auth.service";
 
-import { loginOrganization, getOrganizationProfile } from "../../../controllers/auth.controller";
+import { loginOrganization } from "../../../controllers/auth.controller";
 
 describe("Auth Controller", () => {
   let req: Partial<Request>;
@@ -23,7 +22,6 @@ describe("Auth Controller", () => {
     res = { status: statusMock };
     next = jest.fn();
     (authService.loginOrganization as jest.Mock).mockReset();
-    (authService.getOrganizationById as jest.Mock).mockReset();
   });
 
   describe("loginOrganization", () => {

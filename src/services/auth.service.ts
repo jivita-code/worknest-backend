@@ -50,18 +50,3 @@ export const loginOrganization = async (data: OrganizationLoginData): Promise<Au
     },
   };
 };
-
-export const getOrganizationById = async (org_id: string) => {
-  return prisma.organization.findUnique({
-    where: { org_id },
-    select: {
-      org_id: true,
-      name: true,
-      email: true,
-      industry: true,
-      phone: true,
-      logo_url: true,
-      created_at: true,
-    },
-  });
-};

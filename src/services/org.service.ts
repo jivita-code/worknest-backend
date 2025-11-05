@@ -1,6 +1,7 @@
 // Organization Service
 import prisma from "../config/db";
 import { createTrialSubscription } from "./subscriptions.service";
+import { hashPassword } from "../utils/password";
 
 export const deleteOrganization = async (org_id: string) => {
   return prisma.organization.delete({
@@ -20,9 +21,29 @@ export const registerOrganizationWithTrial = async (data: { name: string; email:
       throw new Error("Organization with this email already exists");
     }
 
-    // Create organization
+    // Hash the password before saving
+    const hashedPassword = await hashPassword(data.password);
+
+    // Create organization with hashed password
     const org = await tx.organization.create({
-      data,
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword,
+      },
+      select: {
+        org_id: true,
+        name: true,
+        email: true,
+        industry: true,
+        registration_no: true,
+        address: true,
+        phone: true,
+        logo_url: true,
+        created_at: true,
+        update_at: true,
+        sub_id: true,
+      },
     });
 
     // Get trial plan ID (using Standard Plan for now)

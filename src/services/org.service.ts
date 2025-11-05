@@ -1,7 +1,7 @@
 // Organization Service
 import prisma from "../config/db";
 import { createTrialSubscription } from "./subscriptions.service";
-import { hashPassword } from "../utils/password";
+import { hashPassword, isStrongPassword } from "../utils/password";
 
 export const deleteOrganization = async (org_id: string) => {
   return prisma.organization.delete({
@@ -19,6 +19,11 @@ export const registerOrganizationWithTrial = async (data: { name: string; email:
 
     if (existingOrg) {
       throw new Error("Organization with this email already exists");
+    }
+
+    // Validate password strength
+    if (!isStrongPassword(data.password)) {
+      throw new Error("Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character");
     }
 
     // Hash the password before saving

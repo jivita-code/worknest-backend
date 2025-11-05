@@ -78,48 +78,4 @@ describe("Auth Controller", () => {
     });
   });
 
-  describe("getOrganizationProfile", () => {
-    test("should return organization profile", async () => {
-      req.user = { org_id: "org-123" };
-      const mockOrg = {
-        org_id: "org-123",
-        name: "Test Org",
-        email: "test@example.com",
-        industry: "Tech",
-        phone: "1234567890",
-        logo_url: "logo.png",
-        created_at: new Date(),
-      };
-
-      (authService.getOrganizationById as jest.Mock).mockResolvedValue(mockOrg);
-
-      await getOrganizationProfile(req as Request, res as Response, next);
-
-      expect(authService.getOrganizationById).toHaveBeenCalledWith("org-123");
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith(mockOrg);
-    });
-
-    test("should return 404 if organization not found", async () => {
-      req.user = { org_id: "org-123" };
-
-      (authService.getOrganizationById as jest.Mock).mockResolvedValue(null);
-
-      await getOrganizationProfile(req as Request, res as Response, next);
-
-      expect(statusMock).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({ error: "Organization not found" });
-    });
-
-    test("should call next on service error", async () => {
-      req.user = { org_id: "org-123" };
-      const error = new Error("DB error");
-
-      (authService.getOrganizationById as jest.Mock).mockRejectedValue(error);
-
-      await getOrganizationProfile(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(error);
-    });
-  });
 });

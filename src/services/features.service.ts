@@ -3,11 +3,9 @@ import prisma from "../config/db";
 
 export const seedFeatures = async () => {
   const features = [
-    { name: 'Attendance Tracking' },
-    { name: 'Leave Management' },
-    { name: 'Payroll Processing' },
+    { name: 'Attendance Management' },
+    { name: 'Leave Requests Management' },
     { name: 'Petty Cash Management' },
-    { name: 'Employee Directory' },
   ];
 
   for (const feature of features) {

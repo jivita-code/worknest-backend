@@ -37,3 +37,4 @@ coverage/
 *.swo
 
 /src/generated/prisma
+migrations/

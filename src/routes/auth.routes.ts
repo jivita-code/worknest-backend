@@ -5,6 +5,6 @@ import * as authController from "../controllers/auth.controller";
 const router = Router();
 
 // Public routes
-router.post("/admin-login", authController.loginOrganization);
+router.post("/login", authController.loginOrganization);
 
 export default router;

@@ -1,9 +1,9 @@
-// Organization routes
+// Organization routes (protected - require authentication)
 import { Router } from "express";
-import { registerOrganization } from "../controllers/org.controller";
 
 const router = Router();
 
-router.post("/register-org", registerOrganization);
+// Protected organization routes will go here
+// (these routes require authentication via auth middleware)
 
 export default router;

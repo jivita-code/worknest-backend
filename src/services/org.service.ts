@@ -3,9 +3,22 @@ import prisma from "../config/db";
 import { createTrialSubscription } from "./subscriptions.service";
 import { hashPassword, isStrongPassword } from "../utils/password";
 
-export const deleteOrganization = async (org_id: string) => {
-  return prisma.organization.delete({
+export const getOrganizationById = async (org_id: string) => {
+  return prisma.organization.findUnique({
     where: { org_id },
+    select: {
+      org_id: true,
+      name: true,
+      industry: true,
+      registration_no: true,
+      address: true,
+      email: true,
+      phone: true,
+      logo_url: true,
+      created_at: true,
+      update_at: true,
+      sub_id: true,
+    },
   });
 };
 

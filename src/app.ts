@@ -17,10 +17,10 @@ app.use(express.json());
 
 // public routes
 app.use("/auth", authRoutes);
-app.use("/api/org", orgRoutes); 
 
-// protected routes
+// protected routes (auth middleware applied first)
 app.use("/api", authMiddleware);
+app.use("/api/org", orgRoutes);
 
 // error handler (last)
 app.use(errorMiddleware);

@@ -1,11 +1,12 @@
 // Employee routes (protected - require authentication)
 import { Router } from "express";
-import { getEmployeesDropdown } from "../controllers/employee.controller";
+import { getEmployeesDropdown, createEmployee } from "../controllers/employee.controller";
 
 const router = Router();
 
 // Protected employee routes
 router.get("/dropdown", getEmployeesDropdown);
+router.post("/register", createEmployee);
 
 // Future protected routes will go here
 

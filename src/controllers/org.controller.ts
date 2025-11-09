@@ -38,3 +38,32 @@ export const getOrganizationProfile = async (req: Request, res: Response, next: 
     next(err);
   }
 };
+
+export const updateOrganization = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const { name, industry, registration_no, address, phone, logo_url } = req.body;
+
+    // Check if at least one field is provided for update
+    const updateData = { name, industry, registration_no, address, phone, logo_url };
+    const hasUpdates = Object.values(updateData).some(value => value !== undefined);
+
+    if (!hasUpdates) {
+      return res.status(400).json({ error: "At least one field must be provided for update" });
+    }
+
+    const updatedOrganization = await orgService.updateOrganization(org_id, updateData);
+
+    res.status(200).json({
+      organization: updatedOrganization,
+      message: "Organization updated successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};

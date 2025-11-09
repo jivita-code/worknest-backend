@@ -22,6 +22,33 @@ export const getOrganizationById = async (org_id: string) => {
   });
 };
 
+export const updateOrganization = async (org_id: string, data: {
+  name?: string;
+  industry?: string;
+  registration_no?: string;
+  address?: string;
+  phone?: string;
+  logo_url?: string;
+}) => {
+  return prisma.organization.update({
+    where: { org_id },
+    data,
+    select: {
+      org_id: true,
+      name: true,
+      industry: true,
+      registration_no: true,
+      address: true,
+      email: true,
+      phone: true,
+      logo_url: true,
+      created_at: true,
+      update_at: true,
+      sub_id: true,
+    },
+  });
+};
+
 export const registerOrganizationWithTrial = async (data: { name: string; email: string; password: string }) => {
   // Use transaction to ensure atomicity
   const result = await prisma.$transaction(async (tx) => {

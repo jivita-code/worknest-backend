@@ -1,7 +1,7 @@
 // Organization Service
 import prisma from "../config/db";
 import { createTrialSubscription } from "./subscriptions.service";
-import { hashPassword, isStrongPassword } from "../utils/password";
+import { hashPassword, isStrongPassword, verifyPassword } from "../utils/password";
 
 export const getOrganizationById = async (org_id: string) => {
   return prisma.organization.findUnique({
@@ -45,6 +45,47 @@ export const updateOrganization = async (org_id: string, data: {
       created_at: true,
       update_at: true,
       sub_id: true,
+    },
+  });
+};
+
+export const updateOrganizationPassword = async (org_id: string, currentPassword: string, newPassword: string) => {
+  // First, get the organization with password to verify current password
+  const organization = await prisma.organization.findUnique({
+    where: { org_id },
+    select: {
+      org_id: true,
+      password: true,
+    },
+  });
+
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  // Verify current password
+  const isCurrentPasswordValid = await verifyPassword(currentPassword, organization.password);
+  if (!isCurrentPasswordValid) {
+    throw new Error("Current password is incorrect");
+  }
+
+  // Validate new password strength
+  if (!isStrongPassword(newPassword)) {
+    throw new Error("New password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character");
+  }
+
+  // Hash new password
+  const hashedNewPassword = await hashPassword(newPassword);
+
+  // Update password
+  return prisma.organization.update({
+    where: { org_id },
+    data: { password: hashedNewPassword },
+    select: {
+      org_id: true,
+      name: true,
+      email: true,
+      update_at: true,
     },
   });
 };

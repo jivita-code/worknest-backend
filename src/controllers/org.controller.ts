@@ -67,3 +67,32 @@ export const updateOrganization = async (req: Request, res: Response, next: Next
     next(err);
   }
 };
+
+export const updateOrganizationPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Current password and new password are required" });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ error: "New password must be different from current password" });
+    }
+
+    const updatedOrganization = await orgService.updateOrganizationPassword(org_id, currentPassword, newPassword);
+
+    res.status(200).json({
+      organization: updatedOrganization,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};

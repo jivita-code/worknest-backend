@@ -2,9 +2,10 @@ import type { Request, Response, NextFunction } from "express";
 
 // Mock the org service
 jest.mock("../../../services/org.service", () => ({
-  createOrganization: jest.fn(),
+  registerOrganizationWithTrial: jest.fn(),
 }));
 import * as orgService from "../../../services/org.service";
+
 import { registerOrganization } from "../../../controllers/org.controller";
 
 describe("registerOrganization", () => {
@@ -17,69 +18,72 @@ describe("registerOrganization", () => {
   beforeEach(() => {
     jsonMock = jest.fn();
     statusMock = jest.fn().mockReturnValue({ json: jsonMock });
-    req = { body: { name: "Test Org", industry: "Tech", email: "test@example.com" } };
+    req = { body: { name: "Test Org", email: "test@example.com", password: "password123" } };
     res = { status: statusMock };
     next = jest.fn();
-    (orgService.createOrganization as jest.Mock).mockReset();
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockReset();
   });
 
   test("should create organization and return 201", async () => {
     const mockOrg = { org_id: "123", name: "Test Org", email: "test@example.com" };
-    (orgService.createOrganization as jest.Mock).mockResolvedValue(mockOrg);
+
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockResolvedValue(mockOrg);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: "Test Org",
-      industry: "Tech",
       email: "test@example.com",
+      password: "password123",
     });
     expect(statusMock).toHaveBeenCalledWith(201);
-    expect(jsonMock).toHaveBeenCalledWith(mockOrg);
+    expect(jsonMock).toHaveBeenCalledWith({
+      organization: mockOrg,
+    });
     expect(next).not.toHaveBeenCalled();
   });
 
-  test("should call next with error on failure", async () => {
+  test("should call next with error on service failure", async () => {
     const error = new Error("DB error");
-    (orgService.createOrganization as jest.Mock).mockRejectedValue(error);
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockRejectedValue(error);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: "Test Org",
-      industry: "Tech",
       email: "test@example.com",
+      password: "password123",
     });
     expect(next).toHaveBeenCalledWith(error);
     expect(statusMock).not.toHaveBeenCalled();
   });
 
   test("should handle missing name", async () => {
-    req.body = { industry: "Tech", email: "test@example.com" };
+    req.body = { email: "test@example.com", password: "password123" };
     const error = new Error("Validation error");
-    (orgService.createOrganization as jest.Mock).mockRejectedValue(error);
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockRejectedValue(error);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: undefined,
-      industry: "Tech",
       email: "test@example.com",
+      password: "password123",
     });
     expect(next).toHaveBeenCalledWith(error);
   });
 
   test("should handle missing email", async () => {
-    req.body = { name: "Test Org", industry: "Tech" };
+    req.body = { name: "Test Org", password: "password123" };
     const error = new Error("Validation error");
-    (orgService.createOrganization as jest.Mock).mockRejectedValue(error);
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockRejectedValue(error);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: "Test Org",
-      industry: "Tech",
       email: undefined,
+      password: "password123",
     });
     expect(next).toHaveBeenCalledWith(error);
   });
@@ -87,31 +91,30 @@ describe("registerOrganization", () => {
   test("should handle empty body", async () => {
     req.body = {};
     const error = new Error("Validation error");
-    (orgService.createOrganization as jest.Mock).mockRejectedValue(error);
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockRejectedValue(error);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: undefined,
-      industry: undefined,
       email: undefined,
+      password: undefined,
     });
     expect(next).toHaveBeenCalledWith(error);
   });
 
-  test("should handle industry as optional", async () => {
+  test("should handle missing password", async () => {
     req.body = { name: "Test Org", email: "test@example.com" };
-    const mockOrg = { org_id: "123", name: "Test Org", email: "test@example.com" };
-    (orgService.createOrganization as jest.Mock).mockResolvedValue(mockOrg);
+    const error = new Error("Validation error");
+    (orgService.registerOrganizationWithTrial as jest.Mock).mockRejectedValue(error);
 
     await registerOrganization(req as Request, res as Response, next);
 
-    expect(orgService.createOrganization).toHaveBeenCalledWith({
+    expect(orgService.registerOrganizationWithTrial).toHaveBeenCalledWith({
       name: "Test Org",
-      industry: undefined,
       email: "test@example.com",
+      password: undefined,
     });
-    expect(statusMock).toHaveBeenCalledWith(201);
-    expect(jsonMock).toHaveBeenCalledWith(mockOrg);
+    expect(next).toHaveBeenCalledWith(error);
   });
 });

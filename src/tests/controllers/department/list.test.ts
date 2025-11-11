@@ -39,7 +39,8 @@ describe("Department Controller - getAllDepartments", () => {
         },
         parent_department: null,
         sub_departments: [],
-        _count: { employees: 5 },
+        employees: [], // Head is not in employees array, so count should be 5 + 1 = 6
+        _count: { employees: 6 }, // Updated to reflect head being counted
       },
       {
         dep_id: "dep-789",
@@ -58,7 +59,10 @@ describe("Department Controller - getAllDepartments", () => {
         },
         parent_department: null,
         sub_departments: [],
-        _count: { employees: 3 },
+        employees: [
+          { emp_id: "emp-101" }, // Head is already in employees, so no +1
+        ],
+        _count: { employees: 3 }, // Remains 3 since head is already counted
       },
     ];
 

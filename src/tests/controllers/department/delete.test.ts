@@ -86,18 +86,4 @@ describe("Department Controller - deleteDepartment", () => {
     expect(departmentService.deleteDepartment).toHaveBeenCalledWith("dep-123", "org-123");
     expect(mockNext).toHaveBeenCalledWith(error);
   });
-
-  it("should handle department with sub-departments error", async () => {
-    const error = new Error("Cannot delete department that has sub-departments. Please delete or reassign all sub-departments first.");
-
-    (mockRequest as any).user = { org_id: "org-123" };
-    (mockRequest as any).params = { dep_id: "dep-123" };
-
-    (departmentService.deleteDepartment as jest.Mock).mockRejectedValue(error);
-
-    await deleteDepartment(mockRequest as Request, mockResponse as Response, mockNext);
-
-    expect(departmentService.deleteDepartment).toHaveBeenCalledWith("dep-123", "org-123");
-    expect(mockNext).toHaveBeenCalledWith(error);
-  });
 });

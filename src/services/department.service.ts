@@ -357,9 +357,17 @@ export const deleteDepartment = async (dep_id: string, org_id: string) => {
     throw new Error("Cannot delete department that has employees. Please reassign or remove all employees first.");
   }
 
-  // Check if department has sub-departments
+  // If department has sub-departments, remove their parent relationship
   if (existingDepartment.sub_departments && existingDepartment.sub_departments.length > 0) {
-    throw new Error("Cannot delete department that has sub-departments. Please delete or reassign all sub-departments first.");
+    await prisma.department.updateMany({
+      where: {
+        parent_department_id: dep_id,
+        org_id, // Ensure we only affect departments in the same organization
+      },
+      data: {
+        parent_department_id: null,
+      },
+    });
   }
 
   // Delete the department

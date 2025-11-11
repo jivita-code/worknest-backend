@@ -120,3 +120,112 @@ export const createEmployee = async (org_id: string, data: {
     },
   });
 };
+
+export interface UpdateEmployeeData {
+  employee_number?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+  designation?: string;
+  employment_type?: string;
+  join_date?: Date;
+  status?: string;
+  dep_id?: string;
+}
+
+export const updateEmployee = async (emp_id: string, org_id: string, data: UpdateEmployeeData) => {
+  // Check if employee exists and belongs to the organization
+  const existingEmployee = await prisma.employee.findFirst({
+    where: {
+      emp_id,
+      org_id,
+    },
+  });
+
+  if (!existingEmployee) {
+    throw new Error("Employee not found or does not belong to this organization");
+  }
+
+  // If email is being updated, check for uniqueness
+  if (data.email && data.email !== existingEmployee.email) {
+    const emailExists = await prisma.employee.findUnique({
+      where: { email: data.email },
+    });
+
+    if (emailExists) {
+      throw new Error("Employee with this email already exists");
+    }
+  }
+
+  // Prepare update data
+  const updateData: any = {};
+
+  // Handle basic fields
+  if (data.employee_number !== undefined) updateData.employee_number = data.employee_number;
+  if (data.first_name !== undefined) updateData.first_name = data.first_name;
+  if (data.last_name !== undefined) updateData.last_name = data.last_name;
+  if (data.email !== undefined) updateData.email = data.email;
+  if (data.phone !== undefined) updateData.phone = data.phone;
+  if (data.designation !== undefined) updateData.designation = data.designation;
+  if (data.employment_type !== undefined) updateData.employment_type = data.employment_type;
+  if (data.join_date !== undefined) updateData.join_date = data.join_date;
+  if (data.dep_id !== undefined) updateData.dep_id = data.dep_id;
+
+  // Handle password - hash if provided
+  if (data.password) {
+    updateData.password = await hashPassword(data.password);
+  }
+
+  // Handle status change - set resign_date if status is "resigned"
+  if (data.status !== undefined) {
+    updateData.status = data.status;
+    if (data.status === "resigned") {
+      updateData.resign_date = new Date();
+    }
+  }
+
+  // Update the employee
+  const updatedEmployee = await prisma.employee.update({
+    where: {
+      emp_id,
+    },
+    data: updateData,
+    select: {
+      emp_id: true,
+      employee_number: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true,
+      designation: true,
+      employment_type: true,
+      join_date: true,
+      resign_date: true,
+      status: true,
+      created_at: true,
+      update_at: true,
+      department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      headed_department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      organization: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return updatedEmployee;
+};

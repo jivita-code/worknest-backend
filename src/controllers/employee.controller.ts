@@ -101,3 +101,76 @@ export const createEmployee = async (req: Request, res: Response, next: NextFunc
     next(err);
   }
 };
+
+export const updateEmployee = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+    const { emp_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    if (!emp_id) {
+      return res.status(400).json({ error: "Employee ID is required" });
+    }
+
+    const {
+      employee_number,
+      first_name,
+      last_name,
+      email,
+      password,
+      phone,
+      designation,
+      employment_type,
+      join_date,
+      status,
+      dep_id,
+    } = req.body;
+
+    // Validate employment type if provided
+    if (employment_type) {
+      const validEmploymentTypes = ['full-time', 'part-time', 'intern', 'contract'];
+      if (!validEmploymentTypes.includes(employment_type)) {
+        return res.status(400).json({
+          error: "Employment type must be one of: full-time, part-time, intern, contract"
+        });
+      }
+    }
+
+    // Validate status if provided
+    if (status) {
+      const validStatuses = ['active', 'resigned'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          error: "Status must be one of: active, resigned"
+        });
+      }
+    }
+
+    const employeeData: any = {};
+
+    // Add fields if provided
+    if (employee_number !== undefined) employeeData.employee_number = employee_number;
+    if (first_name !== undefined) employeeData.first_name = first_name;
+    if (last_name !== undefined) employeeData.last_name = last_name;
+    if (email !== undefined) employeeData.email = email;
+    if (password !== undefined) employeeData.password = password;
+    if (phone !== undefined) employeeData.phone = phone;
+    if (designation !== undefined) employeeData.designation = designation;
+    if (employment_type !== undefined) employeeData.employment_type = employment_type;
+    if (join_date !== undefined) employeeData.join_date = new Date(join_date);
+    if (status !== undefined) employeeData.status = status;
+    if (dep_id !== undefined) employeeData.dep_id = dep_id;
+
+    const employee = await employeeService.updateEmployee(emp_id, org_id, employeeData);
+
+    res.status(200).json({
+      employee,
+      message: "Employee updated successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};

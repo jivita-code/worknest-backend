@@ -174,3 +174,24 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
     next(err);
   }
 };
+
+export const deleteEmployee = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+    const { emp_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    if (!emp_id) {
+      return res.status(400).json({ error: "Employee ID is required" });
+    }
+
+    const result = await employeeService.deleteEmployee(emp_id, org_id);
+
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};

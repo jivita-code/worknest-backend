@@ -229,3 +229,76 @@ export const updateEmployee = async (emp_id: string, org_id: string, data: Updat
 
   return updatedEmployee;
 };
+
+export const deleteEmployee = async (emp_id: string, org_id: string) => {
+  // Check if employee exists and belongs to the organization
+  const existingEmployee = await prisma.employee.findFirst({
+    where: {
+      emp_id,
+      org_id,
+    },
+    include: {
+      headed_department: true,
+      attendances: true,
+      leave_requests: true,
+      approved_leaves: true,
+      petty_cash_requests: true,
+      approved_petty_cash: true,
+    },
+  });
+
+  if (!existingEmployee) {
+    throw new Error("Employee not found or does not belong to this organization");
+  }
+
+  // If employee is a department head, clear the head_id reference
+  if (existingEmployee.headed_department) {
+    await prisma.department.update({
+      where: {
+        dep_id: existingEmployee.headed_department.dep_id,
+      },
+      data: {
+        head_id: null,
+      },
+    });
+  }
+
+  // Delete related records first to avoid foreign key constraints
+  // Delete attendances
+  if (existingEmployee.attendances && existingEmployee.attendances.length > 0) {
+    await prisma.attendance.deleteMany({
+      where: {
+        emp_id,
+      },
+    });
+  }
+
+  // Delete leave requests (both as requester and approver)
+  await prisma.leaveRequest.deleteMany({
+    where: {
+      OR: [
+        { emp_id }, // Leave requests made by this employee
+        { approved_by: emp_id }, // Leave requests approved by this employee
+      ],
+    },
+  });
+
+  // Delete petty cash requests (both as requester and approver)
+  await prisma.pettyCashRequest.deleteMany({
+    where: {
+      OR: [
+        { emp_id }, // Petty cash requests made by this employee
+        { approved_by: emp_id }, // Petty cash requests approved by this employee
+      ],
+    },
+  });
+
+  // Finally, delete the employee
+  await prisma.employee.delete({
+    where: {
+      emp_id,
+    },
+  });
+
+  return { message: "Employee deleted successfully" };
+};

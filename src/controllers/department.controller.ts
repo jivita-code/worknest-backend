@@ -98,6 +98,27 @@ export const updateDepartment = async (req: Request, res: Response, next: NextFu
   }
 };
 
+export const deleteDepartment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+    const { dep_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    if (!dep_id) {
+      return res.status(400).json({ error: "Department ID is required" });
+    }
+
+    const result = await departmentService.deleteDepartment(dep_id, org_id);
+
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const createDepartment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { org_id } = (req as any).user;

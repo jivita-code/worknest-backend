@@ -308,3 +308,40 @@ export const createDepartment = async (org_id: string, data: CreateDepartmentDat
 
   return department;
 };
+
+export const deleteDepartment = async (dep_id: string, org_id: string) => {
+  // Check if department exists and belongs to the organization
+  const existingDepartment = await prisma.department.findFirst({
+    where: {
+      dep_id,
+      org_id,
+    },
+    include: {
+      employees: true,
+      sub_departments: true,
+    },
+  });
+
+  if (!existingDepartment) {
+    throw new Error("Department not found or does not belong to this organization");
+  }
+
+  // Check if department has employees
+  if (existingDepartment.employees && existingDepartment.employees.length > 0) {
+    throw new Error("Cannot delete department that has employees. Please reassign or remove all employees first.");
+  }
+
+  // Check if department has sub-departments
+  if (existingDepartment.sub_departments && existingDepartment.sub_departments.length > 0) {
+    throw new Error("Cannot delete department that has sub-departments. Please delete or reassign all sub-departments first.");
+  }
+
+  // Delete the department
+  await prisma.department.delete({
+    where: {
+      dep_id,
+    },
+  });
+
+  return { message: "Department deleted successfully" };
+};

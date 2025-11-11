@@ -20,6 +20,44 @@ export const getEmployeesDropdown = async (org_id: string) => {
   });
 };
 
+export const getAllEmployees = async (org_id: string) => {
+  return prisma.employee.findMany({
+    where: {
+      org_id,
+    },
+    include: {
+      department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      headed_department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      organization: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      _count: {
+        select: {
+          attendances: true,
+          leave_requests: true,
+          petty_cash_requests: true,
+        },
+      },
+    },
+    orderBy: {
+      first_name: 'asc',
+    },
+  });
+};
+
 export const createEmployee = async (org_id: string, data: {
   employee_number: string;
   first_name: string;

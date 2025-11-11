@@ -53,11 +53,6 @@ export const getAllDepartments = async (org_id: string) => {
           name: true,
         },
       },
-      employees: {
-        select: {
-          emp_id: true,
-        },
-      },
       _count: {
         select: {
           employees: true,
@@ -69,28 +64,7 @@ export const getAllDepartments = async (org_id: string) => {
     },
   });
 
-  // Calculate correct employee count including head if not already counted
-  const departmentsWithCorrectCount = departments.map(dept => {
-    let employeeCount = dept._count.employees;
-
-    // If department has a head, check if they're already counted in employees
-    if (dept.head) {
-      const headIsInEmployees = dept.employees.some(emp => emp.emp_id === dept.head!.emp_id);
-      // If head is not in the employees list, add 1 to the count
-      if (!headIsInEmployees) {
-        employeeCount += 1;
-      }
-    }
-
-    return {
-      ...dept,
-      _count: {
-        employees: employeeCount,
-      },
-    };
-  });
-
-  return departmentsWithCorrectCount;
+  return departments;
 };
 
 export interface UpdateDepartmentData {

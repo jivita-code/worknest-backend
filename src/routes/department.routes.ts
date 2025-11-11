@@ -1,6 +1,6 @@
 // Department routes (protected - require authentication)
 import { Router } from "express";
-import { getDepartmentsDropdown, getAllDepartments, createDepartment } from "../controllers/department.controller";
+import { getDepartmentsDropdown, getAllDepartments, createDepartment, updateDepartment } from "../controllers/department.controller";
 
 const router = Router();
 
@@ -8,6 +8,7 @@ const router = Router();
 router.get("/dropdown", getDepartmentsDropdown);
 router.get("/list", getAllDepartments);
 router.post("/create", createDepartment);
+router.put("/update/:dep_id", updateDepartment);
 
 // Future protected routes will go here
 

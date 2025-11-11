@@ -26,6 +26,47 @@ export const getDepartmentsDropdown = async (org_id: string) => {
   return departments;
 };
 
+export const getAllDepartments = async (org_id: string) => {
+  const departments = await prisma.department.findMany({
+    where: {
+      org_id,
+    },
+    include: {
+      head: {
+        select: {
+          emp_id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+          designation: true,
+        },
+      },
+      parent_department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      sub_departments: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      _count: {
+        select: {
+          employees: true,
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
+  return departments;
+};
+
 export const createDepartment = async (org_id: string, data: CreateDepartmentData) => {
   const { name, head_id, parent_department_id } = data;
 

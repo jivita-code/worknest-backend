@@ -21,6 +21,25 @@ export const getDepartmentsDropdown = async (req: Request, res: Response, next: 
   }
 };
 
+export const getAllDepartments = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { org_id } = (req as any).user;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const departments = await departmentService.getAllDepartments(org_id);
+
+    res.status(200).json({
+      departments,
+      message: "Departments retrieved successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const createDepartment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { org_id } = (req as any).user;

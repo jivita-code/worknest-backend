@@ -9,6 +9,23 @@ export interface CreateDepartmentData {
   parent_department_id?: string;
 }
 
+export const getDepartmentsDropdown = async (org_id: string) => {
+  const departments = await prisma.department.findMany({
+    where: {
+      org_id,
+    },
+    select: {
+      dep_id: true,
+      name: true,
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
+  return departments;
+};
+
 export const createDepartment = async (org_id: string, data: CreateDepartmentData) => {
   const { name, head_id, parent_department_id } = data;
 

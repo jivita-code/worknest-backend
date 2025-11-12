@@ -21,7 +21,6 @@ export interface AuthResponse {
     first_name: string;
     last_name: string;
     email: string;
-    profile_photo_url?: string | undefined;
   };
 }
 
@@ -92,7 +91,6 @@ export const login = async (data: OrganizationLoginData): Promise<AuthResponse> 
         first_name: employee.first_name,
         last_name: employee.last_name,
         email: employee.email,
-        profile_photo_url: employee.profile_photo_url || undefined,
       },
     };
   }

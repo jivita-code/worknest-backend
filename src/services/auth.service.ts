@@ -17,7 +17,7 @@ export interface AuthResponse {
   };
 }
 
-export const loginOrganization = async (data: OrganizationLoginData): Promise<AuthResponse> => {
+export const login = async (data: OrganizationLoginData): Promise<AuthResponse> => {
   const { email, password } = data;
 
   // Find organization by email

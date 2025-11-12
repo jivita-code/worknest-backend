@@ -6,7 +6,7 @@ import { registerOrganization } from "../controllers/org.controller";
 const router = Router();
 
 // Public routes
-router.post("/login", authController.loginOrganization);
+router.post("/login", authController.login);
 router.post("/register-organization", registerOrganization);
 
 export default router;

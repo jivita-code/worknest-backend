@@ -1,5 +1,5 @@
 // Department service
-import { PrismaClient } from "../../prisma/generated/prisma";
+import { PrismaClient } from "..//generated/prisma";
 const prisma = new PrismaClient();
 export const getDepartmentsDropdown = async (org_id) => {
     const departments = await prisma.department.findMany({

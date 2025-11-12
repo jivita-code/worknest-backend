@@ -36,5 +36,5 @@ coverage/
 *.swp
 *.swo
 
-/src/generated/prisma
+/prisma/generated/
 migrations/

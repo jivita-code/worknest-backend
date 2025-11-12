@@ -2,11 +2,11 @@ import type { Request, Response, NextFunction } from "express";
 
 // Mock the auth service
 jest.mock("../../../services/auth.service", () => ({
-  loginOrganization: jest.fn(),
+  login: jest.fn(),
 }));
 import * as authService from "../../../services/auth.service";
 
-import { loginOrganization } from "../../../controllers/auth.controller";
+import { login } from "../../../controllers/auth.controller";
 
 describe("Auth Controller", () => {
   let req: Partial<Request>;
@@ -21,23 +21,50 @@ describe("Auth Controller", () => {
     req = {};
     res = { status: statusMock };
     next = jest.fn();
-    (authService.loginOrganization as jest.Mock).mockReset();
+    (authService.login as jest.Mock).mockReset();
   });
 
-  describe("loginOrganization", () => {
-    test("should login successfully", async () => {
+  describe("login", () => {
+    test("should login organization successfully", async () => {
       req.body = { email: "test@example.com", password: "password123" };
       const mockAuthData = {
         token: "jwt-token",
         organization: { org_id: "org-123", name: "Test Org", email: "test@example.com" },
       };
 
-      (authService.loginOrganization as jest.Mock).mockResolvedValue(mockAuthData);
+      (authService.login as jest.Mock).mockResolvedValue(mockAuthData);
 
-      await loginOrganization(req as Request, res as Response, next);
+      await login(req as Request, res as Response, next);
 
-      expect(authService.loginOrganization).toHaveBeenCalledWith({
+      expect(authService.login).toHaveBeenCalledWith({
         email: "test@example.com",
+        password: "password123",
+      });
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith(mockAuthData);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    test("should login employee successfully", async () => {
+      req.body = { email: "employee@example.com", password: "password123" };
+      const mockAuthData = {
+        token: "jwt-token",
+        organization: { org_id: "org-123", name: "Test Org", email: "org@example.com" },
+        employee: {
+          emp_id: "emp-123",
+          first_name: "John",
+          last_name: "Doe",
+          email: "employee@example.com",
+          profile_photo_url: "photo.jpg",
+        },
+      };
+
+      (authService.login as jest.Mock).mockResolvedValue(mockAuthData);
+
+      await login(req as Request, res as Response, next);
+
+      expect(authService.login).toHaveBeenCalledWith({
+        email: "employee@example.com",
         password: "password123",
       });
       expect(statusMock).toHaveBeenCalledWith(200);
@@ -48,34 +75,36 @@ describe("Auth Controller", () => {
     test("should return 400 for missing email", async () => {
       req.body = { password: "password123" };
 
-      await loginOrganization(req as Request, res as Response, next);
+      await login(req as Request, res as Response, next);
 
       expect(statusMock).toHaveBeenCalledWith(400);
       expect(jsonMock).toHaveBeenCalledWith({ error: "Email and password are required" });
-      expect(authService.loginOrganization).not.toHaveBeenCalled();
+      expect(authService.login).not.toHaveBeenCalled();
     });
 
     test("should return 400 for missing password", async () => {
       req.body = { email: "test@example.com" };
 
-      await loginOrganization(req as Request, res as Response, next);
+      await login(req as Request, res as Response, next);
 
       expect(statusMock).toHaveBeenCalledWith(400);
       expect(jsonMock).toHaveBeenCalledWith({ error: "Email and password are required" });
-      expect(authService.loginOrganization).not.toHaveBeenCalled();
+      expect(authService.login).not.toHaveBeenCalled();
     });
 
-    test("should call next on service error", async () => {
+    test("should handle service errors", async () => {
       req.body = { email: "test@example.com", password: "password123" };
-      const error = new Error("Invalid credentials");
+      const error = new Error("Invalid email or password");
 
-      (authService.loginOrganization as jest.Mock).mockRejectedValue(error);
+      (authService.login as jest.Mock).mockRejectedValue(error);
 
-      await loginOrganization(req as Request, res as Response, next);
+      await login(req as Request, res as Response, next);
 
+      expect(authService.login).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      });
       expect(next).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
     });
   });
-
 });

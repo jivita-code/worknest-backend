@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src --exec tsx src/server.ts",
-    "build": "tsc",
+    "build": "tsc && xcopy src\\prisma dist\\prisma /E /I /Y",
     "start": "node dist/server.js",
     "postinstall": "prisma generate",
     "test": "jest",

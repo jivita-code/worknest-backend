@@ -47,6 +47,6 @@
   "allowImportingTsExtensions": false,
   "noEmit": false,
   },
-  "include": ["src", "tests", "src/types"],
+  "include": ["src", "tests", "src/types", "src/prisma"],
   "exclude": ["node_modules", "dist"]
 }

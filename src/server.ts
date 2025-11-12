@@ -1,6 +1,6 @@
 // Server start
 
-import app from "./app.ts";
+import app from "./app";
 
 const PORT = process.env.PORT || 5000;
 

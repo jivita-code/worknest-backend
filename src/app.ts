@@ -9,6 +9,7 @@ import orgRoutes from "./routes/org.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import employeeRoutes from "./routes/employee.routes.js";
 import departmentRoutes from "./routes/department.routes.js";
+import debugRoutes from "./routes/debug.routes.js";
 
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api", authMiddleware);
 app.use("/api/org", orgRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/debug", debugRoutes);
 
 // error handler (last)
 app.use(errorMiddleware);

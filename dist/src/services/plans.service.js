@@ -1,5 +1,5 @@
 // Plans Service
-import prisma from "../config/db";
+import prisma from "../config/db.js";
 export const seedPlans = async () => {
     const allFeatures = await prisma.feature.findMany();
     const selectedFeatureNames = ['Attendance Management', 'Leave Requests Management', 'Petty Cash Management'];

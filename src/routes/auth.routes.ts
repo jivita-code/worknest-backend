@@ -1,7 +1,7 @@
 // Auth routes for organizations
 import { Router } from "express";
-import * as authController from "../controllers/auth.controller";
-import { registerOrganization } from "../controllers/org.controller";
+import * as authController from "../controllers/auth.controller.js";
+import { registerOrganization } from "../controllers/org.controller.js";
 
 const router = Router();
 

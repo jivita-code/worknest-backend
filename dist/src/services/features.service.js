@@ -1,5 +1,5 @@
 // Features service
-import prisma from "../config/db";
+import prisma from "../config/db.js";
 export const seedFeatures = async () => {
     const features = [
         { name: 'Attendance Management' },

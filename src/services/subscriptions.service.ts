@@ -1,4 +1,4 @@
-import prisma from "../config/db";
+import prisma from "../config/db.js";
 
 export const createTrialSubscription = async (org_id: string, plan_id: string, tx?: any) => {
   const startDate = new Date();

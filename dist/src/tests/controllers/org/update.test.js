@@ -2,8 +2,8 @@
 jest.mock("../../../services/org.service", () => ({
     updateOrganization: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
-import { updateOrganization } from "../../../controllers/org.controller";
+import * as orgService from "../../../services/org.service.js";
+import { updateOrganization } from "../../../controllers/org.controller.js";
 describe("updateOrganization", () => {
     let req;
     let res;

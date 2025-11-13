@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../../services/org.service", () => ({
   getOrganizationById: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
+import * as orgService from "../../../services/org.service.js";
 
-import { getOrganizationProfile } from "../../../controllers/org.controller";
+import { getOrganizationProfile } from "../../../controllers/org.controller.js";
 
 describe("getOrganizationProfile", () => {
   let req: Partial<Request>;

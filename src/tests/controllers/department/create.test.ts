@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { createDepartment } from "../../../controllers/department.controller";
-import * as departmentService from "../../../services/department.service";
+import { createDepartment } from "../../../controllers/department.controller.js";
+import * as departmentService from "../../../services/department.service.js";
 
 // Mock the department service
 jest.mock("../../../services/department.service");

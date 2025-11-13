@@ -2,8 +2,8 @@
 jest.mock("../../../services/org.service", () => ({
     registerOrganizationWithTrial: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
-import { registerOrganization } from "../../../controllers/org.controller";
+import * as orgService from "../../../services/org.service.js";
+import { registerOrganization } from "../../../controllers/org.controller.js";
 describe("registerOrganization", () => {
     let req;
     let res;

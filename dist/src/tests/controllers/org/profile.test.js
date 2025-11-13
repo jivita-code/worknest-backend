@@ -2,8 +2,8 @@
 jest.mock("../../../services/org.service", () => ({
     getOrganizationById: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
-import { getOrganizationProfile } from "../../../controllers/org.controller";
+import * as orgService from "../../../services/org.service.js";
+import { getOrganizationProfile } from "../../../controllers/org.controller.js";
 describe("getOrganizationProfile", () => {
     let req;
     let res;

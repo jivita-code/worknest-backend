@@ -2,8 +2,8 @@
 jest.mock("../../../services/employees.service", () => ({
     deleteEmployee: jest.fn(),
 }));
-import * as employeeService from "../../../services/employees.service";
-import { deleteEmployee } from "../../../controllers/employee.controller";
+import * as employeeService from "../../../services/employees.service.js";
+import { deleteEmployee } from "../../../controllers/employee.controller.js";
 describe("deleteEmployee", () => {
     let req;
     let res;

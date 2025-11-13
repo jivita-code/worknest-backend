@@ -2,8 +2,8 @@
 jest.mock("../../../services/employees.service", () => ({
     getAllEmployees: jest.fn(),
 }));
-import * as employeeService from "../../../services/employees.service";
-import { getAllEmployees } from "../../../controllers/employee.controller";
+import * as employeeService from "../../../services/employees.service.js";
+import { getAllEmployees } from "../../../controllers/employee.controller.js";
 describe("getAllEmployees", () => {
     let req;
     let res;

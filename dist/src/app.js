@@ -2,12 +2,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { authMiddleware } from "./middlewares/auth.middleware";
-import { errorMiddleware } from "./middlewares/error.middleware";
-import orgRoutes from "./routes/org.routes";
-import authRoutes from "./routes/auth.routes";
-import employeeRoutes from "./routes/employee.routes";
-import departmentRoutes from "./routes/department.routes";
+import { authMiddleware } from "./middlewares/auth.middleware.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+import orgRoutes from "./routes/org.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import employeeRoutes from "./routes/employee.routes.js";
+import departmentRoutes from "./routes/department.routes.js";
 dotenv.config();
 const app = express();
 app.use(cors());

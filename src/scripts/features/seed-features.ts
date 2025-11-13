@@ -1,4 +1,4 @@
-import { seedFeatures } from "../../services/features.service";
+import { seedFeatures } from "../../services/features.service.js";
 
 async function main() {
   try {

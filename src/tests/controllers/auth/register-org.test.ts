@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../../services/org.service", () => ({
   registerOrganizationWithTrial: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
+import * as orgService from "../../../services/org.service.js";
 
-import { registerOrganization } from "../../../controllers/org.controller";
+import { registerOrganization } from "../../../controllers/org.controller.js";
 
 describe("registerOrganization", () => {
   let req: Partial<Request>;

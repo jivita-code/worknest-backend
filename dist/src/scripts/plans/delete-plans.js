@@ -1,4 +1,4 @@
-import { deleteAllPlans } from "../../services/plans.service";
+import { deleteAllPlans } from "../../services/plans.service.js";
 async function main() {
     try {
         await deleteAllPlans();

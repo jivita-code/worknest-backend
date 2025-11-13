@@ -1,6 +1,6 @@
 // Employee controller
 import { Request, Response, NextFunction } from "express";
-import * as employeeService from "../services/employees.service";
+import * as employeeService from "../services/employees.service.js";
 
 export const getEmployeesDropdown = async (req: Request, res: Response, next: NextFunction) => {
   try {

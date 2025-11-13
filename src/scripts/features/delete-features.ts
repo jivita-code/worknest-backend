@@ -1,4 +1,4 @@
-import { deleteAllFeatures } from "../../services/features.service";
+import { deleteAllFeatures } from "../../services/features.service.js";
 
 async function main() {
   try {

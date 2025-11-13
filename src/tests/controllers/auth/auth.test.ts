@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../../services/auth.service", () => ({
   login: jest.fn(),
 }));
-import * as authService from "../../../services/auth.service";
+import * as authService from "../../../services/auth.service.js";
 
-import { login } from "../../../controllers/auth.controller";
+import { login } from "../../../controllers/auth.controller.js";
 
 describe("Auth Controller", () => {
   let req: Partial<Request>;

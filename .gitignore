@@ -12,6 +12,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build output
+/dist/
 /build/
 
 # TypeScript
@@ -36,5 +37,4 @@ coverage/
 *.swo
 
 /src/generated/prisma
-/prisma/generated/
 migrations/

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { generateToken, verifyToken } from "../../utils/jwt";
+import { generateToken, verifyToken } from "../../utils/jwt.ts";
 
 describe("jwt utils", () => {
   const OLD_SECRET = process.env.JWT_SECRET;

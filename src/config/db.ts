@@ -1,5 +1,5 @@
 // PostgreSQL connection setup using Prisma
-import { PrismaClient } from "../prisma";
+import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 

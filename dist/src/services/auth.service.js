@@ -1,7 +1,7 @@
 // Auth service for organizations
-import prisma from "../config/db";
-import { generateToken } from "../utils/jwt";
-import { verifyPassword } from "../utils/password";
+import prisma from "../config/db.js";
+import { generateToken } from "../utils/jwt.js";
+import { verifyPassword } from "../utils/password.js";
 export const login = async (data) => {
     const { email, password } = data;
     // First try to find organization by email

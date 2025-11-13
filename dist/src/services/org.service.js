@@ -1,7 +1,7 @@
 // Organization Service
-import prisma from "../config/db";
-import { createTrialSubscription } from "./subscriptions.service";
-import { hashPassword, isStrongPassword, verifyPassword } from "../utils/password";
+import prisma from "../config/db.js";
+import { createTrialSubscription } from "./subscriptions.service.js";
+import { hashPassword, isStrongPassword, verifyPassword } from "../utils/password.js";
 export const getOrganizationById = async (org_id) => {
     return prisma.organization.findUnique({
         where: { org_id },

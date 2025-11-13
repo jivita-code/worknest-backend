@@ -1,4 +1,4 @@
-import * as departmentService from "../services/department.service";
+import * as departmentService from "../services/department.service.js";
 export const getDepartmentsDropdown = async (req, res, next) => {
     try {
         const { org_id } = req.user;

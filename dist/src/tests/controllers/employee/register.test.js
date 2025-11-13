@@ -1,5 +1,5 @@
-import { createEmployee } from "../../../controllers/employee.controller";
-import * as employeeService from "../../../services/employees.service";
+import { createEmployee } from "../../../controllers/employee.controller.js";
+import * as employeeService from "../../../services/employees.service.js";
 // Mock the employee service
 jest.mock("../../../services/employees.service");
 describe("Employee Controller - createEmployee", () => {

@@ -2,8 +2,8 @@
 jest.mock("../../../services/auth.service", () => ({
     login: jest.fn(),
 }));
-import * as authService from "../../../services/auth.service";
-import { login } from "../../../controllers/auth.controller";
+import * as authService from "../../../services/auth.service.js";
+import { login } from "../../../controllers/auth.controller.js";
 describe("Auth Controller", () => {
     let req;
     let res;

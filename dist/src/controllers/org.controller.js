@@ -1,4 +1,4 @@
-import * as orgService from "../services/org.service";
+import * as orgService from "../services/org.service.js";
 export const registerOrganization = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;

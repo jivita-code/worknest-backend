@@ -1,6 +1,6 @@
 // Employee Service
-import prisma from "../config/db";
-import { hashPassword } from "../utils/password";
+import prisma from "../config/db.js";
+import { hashPassword } from "../utils/password.js";
 export const getEmployeesDropdown = async (org_id) => {
     return prisma.employee.findMany({
         where: {

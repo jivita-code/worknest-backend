@@ -1,6 +1,6 @@
 // Organization controller
 import { Request, Response, NextFunction } from "express";
-import * as orgService from "../services/org.service";
+import * as orgService from "../services/org.service.js";
 
 export const registerOrganization = async (req: Request, res: Response, next: NextFunction) => {
   try {

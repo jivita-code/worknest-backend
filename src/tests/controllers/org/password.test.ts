@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../../services/org.service", () => ({
   updateOrganizationPassword: jest.fn(),
 }));
-import * as orgService from "../../../services/org.service";
+import * as orgService from "../../../services/org.service.js";
 
-import { updateOrganizationPassword } from "../../../controllers/org.controller";
+import { updateOrganizationPassword } from "../../../controllers/org.controller.js";
 
 describe("updateOrganizationPassword", () => {
   let req: Partial<Request>;

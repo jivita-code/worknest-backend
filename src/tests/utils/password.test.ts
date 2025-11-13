@@ -1,4 +1,4 @@
-import { hashPassword, verifyPassword, isStrongPassword } from "../../utils/password";
+import { hashPassword, verifyPassword, isStrongPassword } from "../../utils/password.js";
 
 describe("password utils", () => {
   test("hashPassword returns a hash string different from plaintext", async () => {

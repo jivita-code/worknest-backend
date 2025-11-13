@@ -1,4 +1,4 @@
-import { errorMiddleware } from "../../middlewares/error.middleware";
+import { errorMiddleware } from "../../middlewares/error.middleware.js";
 
 describe("errorMiddleware", () => {
   const OLD_ENV = process.env.NODE_ENV;

@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../utils/jwt", () => ({
   verifyToken: jest.fn(),
 }));
-import { verifyToken } from "../../utils/jwt";
+import { verifyToken } from "../../utils/jwt.js";
 
-import { authMiddleware } from "../../middlewares/auth.middleware";
+import { authMiddleware } from "../../middlewares/auth.middleware.js";
 
 describe("authMiddleware", () => {
   beforeEach(() => {

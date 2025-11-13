@@ -2,8 +2,8 @@
 jest.mock("../../utils/jwt", () => ({
     verifyToken: jest.fn(),
 }));
-import { verifyToken } from "../../utils/jwt";
-import { authMiddleware } from "../../middlewares/auth.middleware";
+import { verifyToken } from "../../utils/jwt.js";
+import { authMiddleware } from "../../middlewares/auth.middleware.js";
 describe("authMiddleware", () => {
     beforeEach(() => {
         verifyToken.mockReset();

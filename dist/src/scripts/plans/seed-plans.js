@@ -1,4 +1,4 @@
-import { seedPlans } from "../../services/plans.service";
+import { seedPlans } from "../../services/plans.service.js";
 async function main() {
     try {
         await seedPlans();

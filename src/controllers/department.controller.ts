@@ -1,6 +1,6 @@
 // Department controller
 import { Request, Response, NextFunction } from "express";
-import * as departmentService from "../services/department.service";
+import * as departmentService from "../services/department.service.js";
 
 export const getDepartmentsDropdown = async (req: Request, res: Response, next: NextFunction) => {
   try {

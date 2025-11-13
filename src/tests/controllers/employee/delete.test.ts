@@ -4,9 +4,9 @@ import type { Request, Response, NextFunction } from "express";
 jest.mock("../../../services/employees.service", () => ({
   deleteEmployee: jest.fn(),
 }));
-import * as employeeService from "../../../services/employees.service";
+import * as employeeService from "../../../services/employees.service.js";
 
-import { deleteEmployee } from "../../../controllers/employee.controller";
+import { deleteEmployee } from "../../../controllers/employee.controller.js";
 
 describe("deleteEmployee", () => {
   let req: Partial<Request>;

@@ -1,6 +1,6 @@
 // Department routes (protected - require authentication)
 import { Router } from "express";
-import { getDepartmentsDropdown, getAllDepartments, createDepartment, updateDepartment, deleteDepartment } from "../controllers/department.controller";
+import { getDepartmentsDropdown, getAllDepartments, createDepartment, updateDepartment, deleteDepartment } from "../controllers/department.controller.js";
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-import * as employeeService from "../services/employees.service";
+import * as employeeService from "../services/employees.service.js";
 export const getEmployeesDropdown = async (req, res, next) => {
     try {
         const { org_id } = req.user;

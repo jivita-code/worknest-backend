@@ -1,6 +1,6 @@
 // Organization routes (protected - require authentication)
 import { Router } from "express";
-import { getOrganizationProfile, updateOrganization, updateOrganizationPassword } from "../controllers/org.controller";
+import { getOrganizationProfile, updateOrganization, updateOrganizationPassword } from "../controllers/org.controller.js";
 const router = Router();
 // Protected organization routes
 router.get("/profile", getOrganizationProfile);

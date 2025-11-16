@@ -2,6 +2,45 @@
 import prisma from "../config/db.js";
 import { hashPassword } from "../utils/password.js";
 
+export const getEmployeeProfile = async (emp_id: string, org_id: string) => {
+  return prisma.employee.findFirst({
+    where: {
+      emp_id,
+      org_id,
+    },
+    select: {
+      emp_id: true,
+      employee_number: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true,
+      profile_photo_url: true,
+      designation: true,
+      employment_type: true,
+      join_date: true,
+      resign_date: true,
+      status: true,
+      created_at: true,
+      update_at: true,
+      department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      organization: {
+        select: {
+          org_id: true,
+          name: true,
+          email: true,
+          logo_url: true,
+        },
+      },
+    },
+  });
+};
+
 export const getEmployeesDropdown = async (org_id: string) => {
   return prisma.employee.findMany({
     where: {
@@ -134,6 +173,83 @@ export interface UpdateEmployeeData {
   status?: string;
   dep_id?: string;
 }
+
+export interface UpdateEmployeeProfileData {
+  first_name?: string;
+  last_name?: string;
+  password?: string;
+  phone?: string;
+  profile_photo_url?: string;
+  email?: string;
+}
+
+export const updateEmployeeProfile = async (
+  emp_id: string,
+  org_id: string,
+  data: UpdateEmployeeProfileData
+) => {
+  const existingEmployee = await prisma.employee.findFirst({
+    where: {
+      emp_id,
+      org_id,
+    },
+  });
+
+  if (!existingEmployee) {
+    throw new Error("Employee not found or does not belong to this organization");
+  }
+
+  if (data.email && data.email !== existingEmployee.email) {
+    const emailExists = await prisma.employee.findUnique({
+      where: { email: data.email },
+    });
+
+    if (emailExists) {
+      throw new Error("Employee with this email already exists");
+    }
+  }
+
+  const updateData: any = {};
+
+  if (data.first_name !== undefined) updateData.first_name = data.first_name;
+  if (data.last_name !== undefined) updateData.last_name = data.last_name;
+  if (data.phone !== undefined) updateData.phone = data.phone;
+  if (data.profile_photo_url !== undefined) updateData.profile_photo_url = data.profile_photo_url;
+  if (data.email !== undefined) updateData.email = data.email;
+
+  if (data.password) {
+    updateData.password = await hashPassword(data.password);
+  }
+
+  const updatedEmployee = await prisma.employee.update({
+    where: { emp_id },
+    data: updateData,
+    select: {
+      emp_id: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true,
+      profile_photo_url: true,
+      designation: true,
+      employment_type: true,
+      join_date: true,
+      status: true,
+      created_at: true,
+      update_at: true,
+      organization: {
+        select: {
+          org_id: true,
+          name: true,
+          email: true,
+          logo_url: true,
+        },
+      },
+    },
+  });
+
+  return updatedEmployee;
+};
 
 export const updateEmployee = async (emp_id: string, org_id: string, data: UpdateEmployeeData) => {
   // Check if employee exists and belongs to the organization

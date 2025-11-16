@@ -2,6 +2,74 @@
 import { Request, Response, NextFunction } from "express";
 import * as employeeService from "../services/employees.service.js";
 
+export const getEmployeeProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { emp_id, org_id } = (req as any).user;
+
+    if (!emp_id) {
+      return res.status(400).json({ error: "Employee ID not found in token" });
+    }
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const employee = await employeeService.getEmployeeProfile(emp_id, org_id);
+
+    if (!employee) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    res.status(200).json({ employee });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateEmployeeProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { emp_id, org_id } = (req as any).user;
+
+    if (!emp_id) {
+      return res.status(400).json({ error: "Employee ID not found in token" });
+    }
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const { first_name, last_name, password, phone, profile_photo_url, email } = req.body || {};
+
+    if (
+      first_name === undefined &&
+      last_name === undefined &&
+      password === undefined &&
+      phone === undefined &&
+      profile_photo_url === undefined &&
+      email === undefined
+    ) {
+      return res.status(400).json({ error: "At least one field must be provided for update" });
+    }
+
+    const updateData: any = {};
+    if (first_name !== undefined) updateData.first_name = first_name;
+    if (last_name !== undefined) updateData.last_name = last_name;
+    if (password !== undefined) updateData.password = password;
+    if (phone !== undefined) updateData.phone = phone;
+    if (profile_photo_url !== undefined) updateData.profile_photo_url = profile_photo_url;
+    if (email !== undefined) updateData.email = email;
+
+    const employee = await employeeService.updateEmployeeProfile(emp_id, org_id, updateData);
+
+    res.status(200).json({
+      employee,
+      message: "Profile updated successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getEmployeesDropdown = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { org_id } = (req as any).user;

@@ -38,14 +38,15 @@ export const updateEmployeeProfile = async (req: Request, res: Response, next: N
       return res.status(400).json({ error: "Organization ID not found in token" });
     }
 
-    const { first_name, last_name, password, phone, profile_photo_url } = req.body || {};
+    const { first_name, last_name, password, phone, profile_photo_url, email } = req.body || {};
 
     if (
       first_name === undefined &&
       last_name === undefined &&
       password === undefined &&
       phone === undefined &&
-      profile_photo_url === undefined
+      profile_photo_url === undefined &&
+      email === undefined
     ) {
       return res.status(400).json({ error: "At least one field must be provided for update" });
     }
@@ -56,6 +57,7 @@ export const updateEmployeeProfile = async (req: Request, res: Response, next: N
     if (password !== undefined) updateData.password = password;
     if (phone !== undefined) updateData.phone = phone;
     if (profile_photo_url !== undefined) updateData.profile_photo_url = profile_photo_url;
+    if (email !== undefined) updateData.email = email;
 
     const employee = await employeeService.updateEmployeeProfile(emp_id, org_id, updateData);
 

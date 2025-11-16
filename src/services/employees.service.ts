@@ -180,6 +180,7 @@ export interface UpdateEmployeeProfileData {
   password?: string;
   phone?: string;
   profile_photo_url?: string;
+  email?: string;
 }
 
 export const updateEmployeeProfile = async (
@@ -198,12 +199,23 @@ export const updateEmployeeProfile = async (
     throw new Error("Employee not found or does not belong to this organization");
   }
 
+  if (data.email && data.email !== existingEmployee.email) {
+    const emailExists = await prisma.employee.findUnique({
+      where: { email: data.email },
+    });
+
+    if (emailExists) {
+      throw new Error("Employee with this email already exists");
+    }
+  }
+
   const updateData: any = {};
 
   if (data.first_name !== undefined) updateData.first_name = data.first_name;
   if (data.last_name !== undefined) updateData.last_name = data.last_name;
   if (data.phone !== undefined) updateData.phone = data.phone;
   if (data.profile_photo_url !== undefined) updateData.profile_photo_url = data.profile_photo_url;
+  if (data.email !== undefined) updateData.email = data.email;
 
   if (data.password) {
     updateData.password = await hashPassword(data.password);

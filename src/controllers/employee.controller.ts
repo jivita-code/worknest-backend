@@ -2,6 +2,30 @@
 import { Request, Response, NextFunction } from "express";
 import * as employeeService from "../services/employees.service.js";
 
+export const getEmployeeProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { emp_id, org_id } = (req as any).user;
+
+    if (!emp_id) {
+      return res.status(400).json({ error: "Employee ID not found in token" });
+    }
+
+    if (!org_id) {
+      return res.status(400).json({ error: "Organization ID not found in token" });
+    }
+
+    const employee = await employeeService.getEmployeeProfile(emp_id, org_id);
+
+    if (!employee) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    res.status(200).json({ employee });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getEmployeesDropdown = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { org_id } = (req as any).user;

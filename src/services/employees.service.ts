@@ -2,6 +2,45 @@
 import prisma from "../config/db.js";
 import { hashPassword } from "../utils/password.js";
 
+export const getEmployeeProfile = async (emp_id: string, org_id: string) => {
+  return prisma.employee.findFirst({
+    where: {
+      emp_id,
+      org_id,
+    },
+    select: {
+      emp_id: true,
+      employee_number: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true,
+      profile_photo_url: true,
+      designation: true,
+      employment_type: true,
+      join_date: true,
+      resign_date: true,
+      status: true,
+      created_at: true,
+      update_at: true,
+      department: {
+        select: {
+          dep_id: true,
+          name: true,
+        },
+      },
+      organization: {
+        select: {
+          org_id: true,
+          name: true,
+          email: true,
+          logo_url: true,
+        },
+      },
+    },
+  });
+};
+
 export const getEmployeesDropdown = async (org_id: string) => {
   return prisma.employee.findMany({
     where: {

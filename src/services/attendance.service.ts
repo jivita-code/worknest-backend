@@ -111,3 +111,38 @@ export const getTodayAttendance = async (emp_id: string, org_id: string) => {
     },
   });
 };
+
+export const getOrganizationAttendance = async (org_id: string, startDate: Date, endDate: Date) => {
+  // Ensure endDate includes the full day if it's just a date string, 
+  // but usually the caller passes a Date object. 
+  // If we want to be safe about including the whole end day:
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+  
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+
+  return prisma.attendance.findMany({
+    where: {
+      org_id,
+      date: {
+        gte: start,
+        lte: end,
+      },
+    },
+    include: {
+      employee: {
+        select: {
+          first_name: true,
+          last_name: true,
+          employee_number: true,
+          designation: true,
+          profile_photo_url: true,
+        },
+      },
+    },
+    orderBy: {
+      date: 'desc',
+    },
+  });
+};

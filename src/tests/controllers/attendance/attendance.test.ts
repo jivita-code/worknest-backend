@@ -4,6 +4,7 @@ jest.mock("../../../services/attendance.service", () => ({
   checkIn: jest.fn(),
   checkOut: jest.fn(),
   getTodayAttendance: jest.fn(),
+  getOrganizationAttendance: jest.fn(),
 }));
 import * as attendanceService from "../../../services/attendance.service.js";
 
@@ -11,6 +12,7 @@ import {
   checkInEmployee,
   checkOutEmployee,
   getTodayStatus,
+  getOrganizationAttendanceHistory,
 } from "../../../controllers/attendance.controller.js";
 
 describe("Attendance Controller", () => {
@@ -94,6 +96,27 @@ describe("Attendance Controller", () => {
 
       expect(statusMock).toHaveBeenCalledWith(200);
       expect(jsonMock).toHaveBeenCalledWith({ message: "Not checked in today" });
+    });
+  });
+
+  describe("getOrganizationAttendanceHistory", () => {
+    test("should return attendance history", async () => {
+      const mockHistory = [{ att_id: "1", status: "present" }];
+      (attendanceService.getOrganizationAttendance as jest.Mock).mockResolvedValue(mockHistory);
+      req.query = { startDate: "2023-01-01", endDate: "2023-01-31" };
+
+      await getOrganizationAttendanceHistory(req as Request, res as Response);
+
+      expect(attendanceService.getOrganizationAttendance).toHaveBeenCalled();
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith(mockHistory);
+    });
+
+    test("should return 400 if dates are missing", async () => {
+      req.query = {};
+      await getOrganizationAttendanceHistory(req as Request, res as Response);
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Start date and end date are required" });
     });
   });
 });

@@ -30,7 +30,7 @@ export const getTodayStatus = async (req: Request, res: Response) => {
   try {
     const { emp_id, org_id } = (req as any).user;
     const attendance = await getTodayAttendance(emp_id, org_id);
-    res.status(200).json(attendance || { message: "Not checked in today" });
+    res.status(200).json(attendance);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

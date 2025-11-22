@@ -82,8 +82,8 @@ describe("Attendance Controller", () => {
   });
 
   describe("getTodayStatus", () => {
-    test("should return attendance if checked in", async () => {
-      const mockAttendance = { att_id: "1", status: "present" };
+    test("should return attendance list if checked in", async () => {
+      const mockAttendance = [{ att_id: "1", status: "present" }];
       (attendanceService.getTodayAttendance as jest.Mock).mockResolvedValue(mockAttendance);
 
       await getTodayStatus(req as Request, res as Response);
@@ -93,13 +93,13 @@ describe("Attendance Controller", () => {
       expect(jsonMock).toHaveBeenCalledWith(mockAttendance);
     });
 
-    test("should return message if not checked in", async () => {
-      (attendanceService.getTodayAttendance as jest.Mock).mockResolvedValue(null);
+    test("should return empty list if not checked in", async () => {
+      (attendanceService.getTodayAttendance as jest.Mock).mockResolvedValue([]);
 
       await getTodayStatus(req as Request, res as Response);
 
       expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({ message: "Not checked in today" });
+      expect(jsonMock).toHaveBeenCalledWith([]);
     });
   });
 

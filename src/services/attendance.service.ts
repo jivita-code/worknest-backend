@@ -107,8 +107,8 @@ export const getTodayAttendance = async (emp_id: string, org_id: string) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Return the latest record to determine current status
-  return prisma.attendance.findFirst({
+  // Return all records for today
+  return prisma.attendance.findMany({
     where: {
       emp_id,
       org_id,
@@ -118,7 +118,7 @@ export const getTodayAttendance = async (emp_id: string, org_id: string) => {
       },
     },
     orderBy: {
-      created_at: 'desc',
+      created_at: 'asc',
     },
   });
 };
@@ -179,8 +179,9 @@ export const getEmployeeWeeklyAttendance = async (emp_id: string, org_id: string
         lte: endOfWeek,
       },
     },
-    orderBy: {
-      date: 'asc',
-    },
+    orderBy: [
+      { date: 'asc' },
+      { created_at: 'asc' }
+    ],
   });
 };

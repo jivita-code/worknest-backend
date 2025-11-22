@@ -5,6 +5,7 @@ jest.mock("../../../services/attendance.service", () => ({
   checkOut: jest.fn(),
   getTodayAttendance: jest.fn(),
   getOrganizationAttendance: jest.fn(),
+  getEmployeeWeeklyAttendance: jest.fn(),
 }));
 import * as attendanceService from "../../../services/attendance.service.js";
 
@@ -13,6 +14,7 @@ import {
   checkOutEmployee,
   getTodayStatus,
   getOrganizationAttendanceHistory,
+  getMyWeeklyAttendance,
 } from "../../../controllers/attendance.controller.js";
 
 describe("Attendance Controller", () => {
@@ -24,11 +26,13 @@ describe("Attendance Controller", () => {
   beforeEach(() => {
     jsonMock = jest.fn();
     statusMock = jest.fn().mockReturnValue({ json: jsonMock });
-    req = { user: { emp_id: "emp-1", org_id: "org-1" }, body: {} };
+    req = { user: { emp_id: "emp-1", org_id: "org-1" }, body: {}, query: {} };
     res = { status: statusMock };
     (attendanceService.checkIn as jest.Mock).mockReset();
     (attendanceService.checkOut as jest.Mock).mockReset();
     (attendanceService.getTodayAttendance as jest.Mock).mockReset();
+    (attendanceService.getOrganizationAttendance as jest.Mock).mockReset();
+    (attendanceService.getEmployeeWeeklyAttendance as jest.Mock).mockReset();
   });
 
   describe("checkInEmployee", () => {
@@ -117,6 +121,26 @@ describe("Attendance Controller", () => {
       await getOrganizationAttendanceHistory(req as Request, res as Response);
       expect(statusMock).toHaveBeenCalledWith(400);
       expect(jsonMock).toHaveBeenCalledWith({ error: "Start date and end date are required" });
+    });
+  });
+
+  describe("getMyWeeklyAttendance", () => {
+    test("should return weekly attendance", async () => {
+      const mockWeekly = [{ att_id: "1", status: "present" }];
+      (attendanceService.getEmployeeWeeklyAttendance as jest.Mock).mockResolvedValue(mockWeekly);
+
+      await getMyWeeklyAttendance(req as Request, res as Response);
+
+      expect(attendanceService.getEmployeeWeeklyAttendance).toHaveBeenCalled();
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith(mockWeekly);
+    });
+
+    test("should handle invalid date", async () => {
+      req.query = { date: "invalid-date" };
+      await getMyWeeklyAttendance(req as Request, res as Response);
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Invalid date format" });
     });
   });
 });

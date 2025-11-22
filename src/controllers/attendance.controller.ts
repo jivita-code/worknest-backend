@@ -1,6 +1,6 @@
 // Attendance Controller
 import type { Request, Response } from "express";
-import { checkIn, checkOut, getTodayAttendance, getOrganizationAttendance } from "../services/attendance.service.js";
+import { checkIn, checkOut, getTodayAttendance, getOrganizationAttendance, getEmployeeWeeklyAttendance } from "../services/attendance.service.js";
 
 export const checkInEmployee = async (req: Request, res: Response) => {
   try {
@@ -53,6 +53,24 @@ export const getOrganizationAttendanceHistory = async (req: Request, res: Respon
     }
 
     const attendance = await getOrganizationAttendance(org_id, start, end);
+    res.status(200).json(attendance);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getMyWeeklyAttendance = async (req: Request, res: Response) => {
+  try {
+    const { emp_id, org_id } = (req as any).user;
+    const { date } = req.query;
+
+    const referenceDate = date ? new Date(date as string) : new Date();
+
+    if (isNaN(referenceDate.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    const attendance = await getEmployeeWeeklyAttendance(emp_id, org_id, referenceDate);
     res.status(200).json(attendance);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

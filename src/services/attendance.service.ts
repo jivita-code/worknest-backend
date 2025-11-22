@@ -146,3 +146,30 @@ export const getOrganizationAttendance = async (org_id: string, startDate: Date,
     },
   });
 };
+
+export const getEmployeeWeeklyAttendance = async (emp_id: string, org_id: string, referenceDate: Date = new Date()) => {
+  const currentDay = referenceDate.getDay(); // 0 (Sun) - 6 (Sat)
+  const diffToMonday = currentDay === 0 ? 6 : currentDay - 1; // If Sun(0), go back 6 days. If Mon(1), go back 0.
+
+  const startOfWeek = new Date(referenceDate);
+  startOfWeek.setDate(referenceDate.getDate() - diffToMonday);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  return prisma.attendance.findMany({
+    where: {
+      emp_id,
+      org_id,
+      date: {
+        gte: startOfWeek,
+        lte: endOfWeek,
+      },
+    },
+    orderBy: {
+      date: 'asc',
+    },
+  });
+};

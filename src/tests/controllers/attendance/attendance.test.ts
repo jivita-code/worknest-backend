@@ -49,12 +49,12 @@ describe("Attendance Controller", () => {
     });
 
     test("should handle errors during check in", async () => {
-      (attendanceService.checkIn as jest.Mock).mockRejectedValue(new Error("Already checked in"));
+      (attendanceService.checkIn as jest.Mock).mockRejectedValue(new Error("Employee already checked in"));
 
       await checkInEmployee(req as Request, res as Response);
 
       expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({ error: "Already checked in" });
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Employee already checked in" });
     });
   });
 
@@ -72,12 +72,12 @@ describe("Attendance Controller", () => {
     });
 
     test("should handle errors during check out", async () => {
-      (attendanceService.checkOut as jest.Mock).mockRejectedValue(new Error("Not checked in"));
+      (attendanceService.checkOut as jest.Mock).mockRejectedValue(new Error("Employee already checked out"));
 
       await checkOutEmployee(req as Request, res as Response);
 
       expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({ error: "Not checked in" });
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Employee already checked out" });
     });
   });
 

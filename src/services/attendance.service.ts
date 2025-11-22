@@ -9,8 +9,8 @@ export const checkIn = async (emp_id: string, org_id: string, location?: string)
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Check if already checked in today
-  const existingAttendance = await prisma.attendance.findFirst({
+  // Check for the latest attendance record for today
+  const latestAttendance = await prisma.attendance.findFirst({
     where: {
       emp_id,
       org_id,
@@ -19,10 +19,14 @@ export const checkIn = async (emp_id: string, org_id: string, location?: string)
         lt: tomorrow,
       },
     },
+    orderBy: {
+      created_at: 'desc',
+    },
   });
 
-  if (existingAttendance) {
-    throw new Error("Employee already checked in for today");
+  // If there is an open session (no check_out_time), prevent check-in
+  if (latestAttendance && !latestAttendance.check_out_time) {
+    throw new Error("Employee already checked in");
   }
 
   // Create attendance record
@@ -48,7 +52,7 @@ export const checkOut = async (emp_id: string, org_id: string, location?: string
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Find today's attendance record
+  // Find the latest attendance record for today
   const attendance = await prisma.attendance.findFirst({
     where: {
       emp_id,
@@ -58,6 +62,9 @@ export const checkOut = async (emp_id: string, org_id: string, location?: string
         lt: tomorrow,
       },
     },
+    orderBy: {
+      created_at: 'desc',
+    },
   });
 
   if (!attendance) {
@@ -65,7 +72,7 @@ export const checkOut = async (emp_id: string, org_id: string, location?: string
   }
 
   if (attendance.check_out_time) {
-    throw new Error("Employee already checked out for today");
+    throw new Error("Employee already checked out");
   }
 
   const checkOutTime = new Date();
@@ -100,6 +107,7 @@ export const getTodayAttendance = async (emp_id: string, org_id: string) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
+  // Return the latest record to determine current status
   return prisma.attendance.findFirst({
     where: {
       emp_id,
@@ -108,6 +116,9 @@ export const getTodayAttendance = async (emp_id: string, org_id: string) => {
         gte: today,
         lt: tomorrow,
       },
+    },
+    orderBy: {
+      created_at: 'desc',
     },
   });
 };

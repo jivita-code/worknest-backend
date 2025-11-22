@@ -1,0 +1,99 @@
+import type { Request, Response } from "express";
+
+jest.mock("../../../services/attendance.service", () => ({
+  checkIn: jest.fn(),
+  checkOut: jest.fn(),
+  getTodayAttendance: jest.fn(),
+}));
+import * as attendanceService from "../../../services/attendance.service.js";
+
+import {
+  checkInEmployee,
+  checkOutEmployee,
+  getTodayStatus,
+} from "../../../controllers/attendance.controller.js";
+
+describe("Attendance Controller", () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let jsonMock: jest.Mock;
+  let statusMock: jest.Mock;
+
+  beforeEach(() => {
+    jsonMock = jest.fn();
+    statusMock = jest.fn().mockReturnValue({ json: jsonMock });
+    req = { user: { emp_id: "emp-1", org_id: "org-1" }, body: {} };
+    res = { status: statusMock };
+    (attendanceService.checkIn as jest.Mock).mockReset();
+    (attendanceService.checkOut as jest.Mock).mockReset();
+    (attendanceService.getTodayAttendance as jest.Mock).mockReset();
+  });
+
+  describe("checkInEmployee", () => {
+    test("should check in successfully", async () => {
+      const mockAttendance = { att_id: "1", status: "present" };
+      (attendanceService.checkIn as jest.Mock).mockResolvedValue(mockAttendance);
+      req.body = { location: "Office" };
+
+      await checkInEmployee(req as Request, res as Response);
+
+      expect(attendanceService.checkIn).toHaveBeenCalledWith("emp-1", "org-1", "Office");
+      expect(statusMock).toHaveBeenCalledWith(201);
+      expect(jsonMock).toHaveBeenCalledWith(mockAttendance);
+    });
+
+    test("should handle errors during check in", async () => {
+      (attendanceService.checkIn as jest.Mock).mockRejectedValue(new Error("Already checked in"));
+
+      await checkInEmployee(req as Request, res as Response);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Already checked in" });
+    });
+  });
+
+  describe("checkOutEmployee", () => {
+    test("should check out successfully", async () => {
+      const mockAttendance = { att_id: "1", check_out_time: new Date() };
+      (attendanceService.checkOut as jest.Mock).mockResolvedValue(mockAttendance);
+      req.body = { location: "Home" };
+
+      await checkOutEmployee(req as Request, res as Response);
+
+      expect(attendanceService.checkOut).toHaveBeenCalledWith("emp-1", "org-1", "Home");
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith(mockAttendance);
+    });
+
+    test("should handle errors during check out", async () => {
+      (attendanceService.checkOut as jest.Mock).mockRejectedValue(new Error("Not checked in"));
+
+      await checkOutEmployee(req as Request, res as Response);
+
+      expect(statusMock).toHaveBeenCalledWith(400);
+      expect(jsonMock).toHaveBeenCalledWith({ error: "Not checked in" });
+    });
+  });
+
+  describe("getTodayStatus", () => {
+    test("should return attendance if checked in", async () => {
+      const mockAttendance = { att_id: "1", status: "present" };
+      (attendanceService.getTodayAttendance as jest.Mock).mockResolvedValue(mockAttendance);
+
+      await getTodayStatus(req as Request, res as Response);
+
+      expect(attendanceService.getTodayAttendance).toHaveBeenCalledWith("emp-1", "org-1");
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith(mockAttendance);
+    });
+
+    test("should return message if not checked in", async () => {
+      (attendanceService.getTodayAttendance as jest.Mock).mockResolvedValue(null);
+
+      await getTodayStatus(req as Request, res as Response);
+
+      expect(statusMock).toHaveBeenCalledWith(200);
+      expect(jsonMock).toHaveBeenCalledWith({ message: "Not checked in today" });
+    });
+  });
+});

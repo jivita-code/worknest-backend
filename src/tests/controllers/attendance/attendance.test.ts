@@ -105,7 +105,7 @@ describe("Attendance Controller", () => {
 
   describe("getOrganizationAttendanceHistory", () => {
     test("should return attendance history", async () => {
-      const mockHistory = [{ att_id: "1", status: "present" }];
+      const mockHistory = { "2023-01-01": { "emp-1": { employee: { first_name: "John" }, attendances: [{ att_id: "1", status: "present" }] } } };
       (attendanceService.getOrganizationAttendance as jest.Mock).mockResolvedValue(mockHistory);
       req.query = { startDate: "2023-01-01", endDate: "2023-01-31" };
 

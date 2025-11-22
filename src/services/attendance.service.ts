@@ -133,7 +133,7 @@ export const getOrganizationAttendance = async (org_id: string, startDate: Date,
   const start = new Date(startDate);
   start.setHours(0, 0, 0, 0);
 
-  return prisma.attendance.findMany({
+  const records = await prisma.attendance.findMany({
     where: {
       org_id,
       date: {
@@ -156,6 +156,28 @@ export const getOrganizationAttendance = async (org_id: string, startDate: Date,
       date: 'desc',
     },
   });
+
+  // Group by date, then by employee
+  const grouped: { [date: string]: { [emp_id: string]: { employee: any; attendances: any[] } } } = {};
+
+  records.forEach(record => {
+    const dateKey = record.date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const emp_id = record.emp_id;
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = {};
+    }
+    if (!grouped[dateKey][emp_id]) {
+      grouped[dateKey][emp_id] = {
+        employee: record.employee,
+        attendances: [],
+      };
+    }
+    // Remove employee from the record since it's now in the group
+    const { employee, ...attendance } = record;
+    grouped[dateKey][emp_id].attendances.push(attendance);
+  });
+
+  return grouped;
 };
 
 export const getEmployeeWeeklyAttendance = async (emp_id: string, org_id: string, referenceDate: Date = new Date()) => {

@@ -27,7 +27,11 @@
         "last_name": "Doe",
         "employee_number": "EMP001",
         "designation": "Software Engineer",
-        "profile_photo_url": "https://example.com/photo.jpg"
+        "profile_photo_url": "https://example.com/photo.jpg",
+        "department": {
+          "dep_id": "dep-123",
+          "name": "Engineering"
+        }
       },
       "attendances": [
         {
@@ -52,7 +56,11 @@
         "last_name": "Smith",
         "employee_number": "EMP002",
         "designation": "Designer",
-        "profile_photo_url": null
+        "profile_photo_url": null,
+        "department": {
+          "dep_id": "dep-456",
+          "name": "Design"
+        }
       },
       "attendances": [
         {
@@ -79,11 +87,11 @@
 ```
 
 **Notes on Response:**
-- Returns an object where top-level keys are dates in `YYYY-MM-DD` format.
-- Under each date, keys are `emp_id`, with employee info and their attendance records for that day.
-- Attendances are ordered by date descending at the top level.
+- Top-level hierarchy: **date (YYYY-MM-DD) > employee (emp_id) > records**.
+- Each date key contains employee entries keyed by `emp_id`. Each employee entry includes `employee` (basic info + `department`) and `attendances` (array of records for that day).
+- `department` is included under each `employee` with `dep_id` and `name`.
+- Attendances are ordered by date descending at the top level and by creation time within each day.
 - If no records exist, returns an empty object `{}`.
-- Employee info is included once per employee per day (though typically once overall, but repeated if needed).
 
 **Error Responses:**
 - **400 Bad Request** (Missing dates): `{ "error": "Start date and end date are required" }`

@@ -149,6 +149,12 @@ export const getOrganizationAttendance = async (org_id: string, startDate: Date,
           employee_number: true,
           designation: true,
           profile_photo_url: true,
+          department: {
+            select: {
+              dep_id: true,
+              name: true,
+            },
+          },
         },
       },
     },

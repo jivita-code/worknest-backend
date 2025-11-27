@@ -1,6 +1,13 @@
 // Employee routes (protected - require authentication)
 import { Router } from "express";
-import { getEmployeeProfile, updateEmployeeProfile, getEmployeesDropdown, getAllEmployees, createEmployee, updateEmployee, deleteEmployee } from "../controllers/employee.controller.js";
+import {
+    getEmployeeProfile,
+    updateEmployeeProfile,
+    getEmployeesDropdown,
+    getAllEmployees,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee } from "../controllers/employee.controller.js";
 
 const router = Router();
 

@@ -70,6 +70,79 @@ export const getLeavesForEmployee = async (org_id: string, emp_id: string) => {
   });
 };
 
+export const getLeavesForEmployeeForYear = async (org_id: string, emp_id: string, year?: number) => {
+  const ref = year ? new Date(year, 0, 1) : new Date();
+  const y = year ?? ref.getFullYear();
+
+  const start = new Date(y, 0, 1);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(y, 11, 31);
+  end.setHours(23, 59, 59, 999);
+
+  return prisma.leaveRequest.findMany({
+    where: {
+      org_id,
+      emp_id,
+      AND: [
+        { start_date: { lte: end } },
+        { end_date: { gte: start } },
+      ],
+    },
+    orderBy: { start_date: 'asc' },
+  });
+};
+
+export const getOrganizationLeavesForYear = async (org_id: string, year?: number) => {
+  const ref = year ? new Date(year, 0, 1) : new Date();
+  const y = year ?? ref.getFullYear();
+
+  const start = new Date(y, 0, 1);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(y, 11, 31);
+  end.setHours(23, 59, 59, 999);
+
+  // Find leave requests that overlap the given year (inclusive)
+  const records = await prisma.leaveRequest.findMany({
+    where: {
+      org_id,
+      AND: [
+        { start_date: { lte: end } },
+        { end_date: { gte: start } },
+      ],
+    },
+    include: {
+      employee: {
+        select: {
+          emp_id: true,
+          first_name: true,
+          last_name: true,
+          employee_number: true,
+          designation: true,
+          profile_photo_url: true,
+        },
+      },
+    },
+    orderBy: { start_date: 'asc' },
+  });
+
+  // Group by employee
+  const grouped: Array<{ employee: any; leaves: any[] }> = [];
+  const map: Record<string, number> = {};
+
+  records.forEach(r => {
+    const empId = r.emp_id;
+    if (map[empId] === undefined) {
+      map[empId] = grouped.length;
+      grouped.push({ employee: r.employee, leaves: [] });
+    }
+    const idx = map[empId];
+    const { employee, ...leave } = r as any;
+    grouped[idx].leaves.push(leave);
+  });
+
+  return grouped;
+};
+
 
 export const deleteLeaveRequest = async (leave_id: string, org_id: string, emp_id: string) => {
   const existing = await prisma.leaveRequest.findUnique({ where: { leave_id } });

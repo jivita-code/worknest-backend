@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 jest.mock("../../../services/leave.service", () => ({
   createLeaveRequest: jest.fn(),
   getLeavesForEmployee: jest.fn(),
+  getLeavesForEmployeeForYear: jest.fn(),
   deleteLeaveRequest: jest.fn(),
 }));
 import * as leaveService from "../../../services/leave.service.js";
@@ -21,7 +22,7 @@ describe("Leave Controller", () => {
     req = { user: { emp_id: "emp-1", org_id: "org-1" }, body: {}, params: {} };
     res = { status: statusMock };
     (leaveService.createLeaveRequest as jest.Mock).mockReset();
-    (leaveService.getLeavesForEmployee as jest.Mock).mockReset();
+      (leaveService.getLeavesForEmployeeForYear as jest.Mock).mockReset();
     
     (leaveService.deleteLeaveRequest as jest.Mock).mockReset();
   });
@@ -46,11 +47,11 @@ describe("Leave Controller", () => {
 
   test("getMyLeaves - returns list", async () => {
     const mockLeaves = [{ leave_id: "l1", attachments: JSON.stringify(["a.png"]) }];
-    (leaveService.getLeavesForEmployee as jest.Mock).mockResolvedValue(mockLeaves);
+      (leaveService.getLeavesForEmployeeForYear as jest.Mock).mockResolvedValue(mockLeaves);
 
     await getMyLeaves(req as Request, res as Response);
 
-    expect(leaveService.getLeavesForEmployee).toHaveBeenCalledWith("org-1", "emp-1");
+      expect(leaveService.getLeavesForEmployeeForYear).toHaveBeenCalledWith("org-1", "emp-1");
     expect(statusMock).toHaveBeenCalledWith(200);
     expect(jsonMock).toHaveBeenCalledWith([{ ...mockLeaves[0], attachments: ["a.png"] }]);
   });

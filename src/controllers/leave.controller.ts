@@ -1,6 +1,7 @@
 // Leave Controller
 import type { Request, Response } from "express";
-import { createLeaveRequest, getLeavesForEmployee, deleteLeaveRequest } from "../services/leave.service.js";
+import { createLeaveRequest, getLeavesForEmployeeForYear, deleteLeaveRequest } from "../services/leave.service.js";
+import { getOrganizationLeavesForYear } from "../services/leave.service.js";
 
 const parseAttachments = (input: any): string[] | undefined => {
   if (!input) return undefined;
@@ -31,7 +32,8 @@ export const createLeave = async (req: Request, res: Response) => {
 export const getMyLeaves = async (req: Request, res: Response) => {
   try {
     const { emp_id, org_id } = (req as any).user;
-    const leaves = await getLeavesForEmployee(org_id, emp_id);
+    // Return only current year's leaves for the employee
+    const leaves = await getLeavesForEmployeeForYear(org_id, emp_id);
     const mapped = leaves.map(l => ({
       ...l,
       attachments: l.attachments ? JSON.parse(l.attachments) : [],
@@ -52,5 +54,21 @@ export const deleteLeave = async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+export const getOrganizationLeavesYear = async (req: Request, res: Response) => {
+  try {
+    const { org_id } = (req as any).user;
+    const { year } = req.query;
+    const y = year ? parseInt(year as string, 10) : undefined;
+    if (year && (isNaN(y!) || y! < 1970)) {
+      return res.status(400).json({ error: "Invalid year" });
+    }
+
+    const result = await getOrganizationLeavesForYear(org_id, y);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };

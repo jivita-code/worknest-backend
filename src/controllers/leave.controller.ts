@@ -2,6 +2,7 @@
 import type { Request, Response } from "express";
 import { createLeaveRequest, getLeavesForEmployeeForYear, deleteLeaveRequest } from "../services/leave.service.js";
 import { getOrganizationLeavesForYear } from "../services/leave.service.js";
+import { decisionOnLeaveRequest } from "../services/leave.service.js";
 
 const parseAttachments = (input: any): string[] | undefined => {
   if (!input) return undefined;
@@ -70,5 +71,28 @@ export const getOrganizationLeavesYear = async (req: Request, res: Response) => 
     res.status(200).json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const decisionOnLeave = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user || {};
+    // Organization token should contain `org_id` and act as the decision maker.
+    const { org_id } = user;
+    if (!org_id) {
+      return res.status(403).json({ error: "Forbidden: organization token required" });
+    }
+
+    const { leave_id } = req.params;
+    const { action } = req.body;
+    if (!leave_id || !action || !["approve", "reject"].includes(action)) {
+      return res.status(400).json({ error: "leave_id and action ('approve'|'reject') are required" });
+    }
+
+    // Use org_id as the approver identifier when the organization is the decision maker
+    const result = await decisionOnLeaveRequest(leave_id, org_id, org_id, action);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 };

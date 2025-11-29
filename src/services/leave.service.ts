@@ -153,3 +153,33 @@ export const deleteLeaveRequest = async (leave_id: string, org_id: string, emp_i
   await prisma.leaveRequest.delete({ where: { leave_id } });
   return { success: true };
 };
+
+export const decisionOnLeaveRequest = async (
+  leave_id: string,
+  org_id: string,
+  approver_emp_id: string,
+  action: "approve" | "reject"
+) => {
+  const existing = await prisma.leaveRequest.findUnique({ where: { leave_id } });
+  if (!existing) throw new Error("Leave request not found");
+  if (existing.org_id !== org_id) throw new Error("Not authorized");
+  if (existing.status !== "pending") throw new Error("Only pending leave requests can be acted upon");
+
+  const status = action === "approve" ? "approved" : "rejected";
+  // If the approver is the organization (approver_emp_id === org_id),
+  // do not set `approved_by` because that column is a FK to Employee.emp_id.
+  const data: any = {
+    status,
+    approved_date: new Date(),
+  };
+  if (approver_emp_id && approver_emp_id !== org_id) {
+    data.approved_by = approver_emp_id;
+  }
+
+  const updated = await prisma.leaveRequest.update({
+    where: { leave_id },
+    data,
+  });
+
+  return updated;
+};

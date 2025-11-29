@@ -213,3 +213,90 @@ export const getEmployeeWeeklyAttendance = async (emp_id: string, org_id: string
     ],
   });
 };
+
+/**
+ * Get attendance summary counts for an employee within a date range.
+ * Defaults to year-to-date (start = Jan 1 of current year, end = now) when dates are not provided.
+ * Returns an object matching:
+ * {
+ *   emp_id: string,
+ *   periodStart: string (ISO),
+ *   periodEnd: string (ISO),
+ *   totalPresent: number,
+ *   totalOnLeave: number,
+ *   totalAbsent: number
+ * }
+ */
+export const getEmployeeAttendanceSummary = async (
+  org_id: string,
+  emp_id: string,
+  startDate?: Date,
+  endDate?: Date
+) => {
+  const now = new Date();
+  const ref = startDate || endDate ? null : now;
+
+  const start = startDate
+    ? new Date(startDate)
+    : new Date((ref ?? now).getFullYear(), 0, 1);
+  start.setHours(0, 0, 0, 0);
+
+  const end = endDate ? new Date(endDate) : now;
+  end.setHours(23, 59, 59, 999);
+
+  // Query attendance including `date` so we can group records by day.
+  const detailedRecords = await prisma.attendance.findMany({
+    where: {
+      org_id,
+      emp_id,
+      date: {
+        gte: start,
+        lte: end,
+      },
+    },
+    select: {
+      status: true,
+      date: true,
+    },
+  });
+
+  // Group records by date (YYYY-MM-DD) so multiple records on the same day count once
+  const days: { [date: string]: string[] } = {};
+  detailedRecords.forEach(r => {
+    const dateKey = new Date(r.date).toISOString().split('T')[0];
+    if (!days[dateKey]) days[dateKey] = [];
+    days[dateKey].push(r.status);
+  });
+
+  let totalPresent = 0;
+  let totalOnLeave = 0;
+
+  // For each day, derive a single status. Priority: present > on_leave > absent
+  Object.keys(days).forEach(dateKey => {
+    const statuses = days[dateKey];
+    if (statuses.includes('present')) totalPresent += 1;
+    else if (statuses.includes('on_leave')) totalOnLeave += 1;
+    // if neither present nor on_leave, it's implicitly absent for that day
+  });
+
+  // Calculate total calendar days in the period (inclusive)
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const startDay = new Date(start);
+  startDay.setHours(0, 0, 0, 0);
+  const endDay = new Date(end);
+  endDay.setHours(0, 0, 0, 0);
+  const totalDays = Math.floor((endDay.getTime() - startDay.getTime()) / msPerDay) + 1;
+
+  // Absent = days in period minus days present or on leave. Ensure non-negative.
+  let totalAbsent = totalDays - (totalPresent + totalOnLeave);
+  if (totalAbsent < 0) totalAbsent = 0;
+
+  return {
+    emp_id,
+    periodStart: start.toISOString().split('T')[0],
+    periodEnd: end.toISOString().split('T')[0],
+    totalPresent,
+    totalOnLeave,
+    totalAbsent,
+  };
+};

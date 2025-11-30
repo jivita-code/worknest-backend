@@ -11,6 +11,7 @@ import employeeRoutes from "./routes/employee.routes.js";
 import departmentRoutes from "./routes/department.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import leaveRoutes from "./routes/leave.routes.js";
+import pettyCashRoutes from "./routes/petty-cash.routes.js";
 
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use("/api/employees", employeeRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leave", leaveRoutes);
+app.use("/api/petty-cash", pettyCashRoutes);
 
 // error handler (last)
 app.use(errorMiddleware);
